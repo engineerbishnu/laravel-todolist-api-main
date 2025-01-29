@@ -71,11 +71,12 @@ POST https://laravel-todolist-api.test/api/register
 Content-Type: application/json
 
 {
-  "name": "user",
-  "email": "user@user.com",
+  "name": "bishnu",
+  "email": "bishnu@tester.com",
   "password": "password",
   "password_confirmation": "password"
 }
+
 ```
 
 #### 2. Login
@@ -87,7 +88,7 @@ POST https://laravel-todolist-api.test/api/login
 Content-Type: application/json
 
 {
-  "email": "user@user.com",
+  "email": "bishnu@tester.com",
   "password": "password"
 }
 ```
@@ -102,8 +103,8 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 Content-Type: application/json
 
 {
-  "title": "todo title",
-  "description": "todo description",
+  "title": "My First Todo List",
+  "description": "This is sample test todo list",
   "completed": "0"
 }
 ```
@@ -142,8 +143,8 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 Content-Type: application/json
 
 {
-  "title": "todo title",
-  "description": "todo description",
+  "title": "My First Todo with updated List",
+  "description": "TODO has been updated",
   "completed": "1"
 }
 ```
