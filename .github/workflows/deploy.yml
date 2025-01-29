@@ -1,12 +1,13 @@
 name: Deploy
+
 on: 
   push:
     branches:
-      - main  # Deploy only on push to the main branch
+      - main 
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Use your self-hosted runner
+    runs-on: self-hosted 
 
     steps:
       # Step 1: Checkout the code
@@ -16,29 +17,49 @@ jobs:
       # Step 2: Deploy Laravel Code
       - name: Deploy Laravel Code
         run: |
-          # Navigate to the Laravel directory
           cd /home/vagrant/laravel-todolist-api-main
-
-          # Pull the latest changes from the repository
           git pull origin main
 
-          # Install/update dependencies (excluding dev dependencies) and optimize autoloader
           composer install --no-dev --optimize-autoloader
 
-          # Generate the application key
           php artisan key:generate
 
-          # Run migrations with --force for production environments
           php artisan migrate --force
 
-          # Clear and cache configuration to optimize the app
           php artisan config:cache
 
-          # Restart PHP-FPM to apply changes
-          sudo systemctl restart php8.1-fpm
+          sudo chmod -R 775 storage
+          sudo usermod -aG vagrant www-data
+          sudo chown -R www-data:www-data storage
+          sudo touch storage/logs/laravel.log
+          sudo chmod 664 storage/logs/laravel.log
+          sudo chown www-data:www-data storage/logs/laravel.log
 
-          # Optionally, reload Nginx (if you made Nginx configuration changes)
-          sudo systemctl reload nginx
+          # Step 3: Set up Nginx configuration
+          # Copy the Nginx configuration to sites-available directory
+          sudo cp /home/vagrant/laravel-todolist-api-main/docker/laravel-app /etc/nginx/sites-available/laravel-app
 
-          # Ensure the proper permissions for directories (if needed)
-          sudo chown -R www-data:www-data /home/vagrant/laravel-todolist-api-main/storage /home/vagrant/laravel-todolist-api-main/bootstrap/cache
+          # Create a symbolic link in sites-enabled to enable the site
+          sudo ln -s /etc/nginx/sites-available/laravel-app /etc/nginx/sites-enabled/
+
+          # Step 4: Test the Nginx configuration to ensure there are no syntax errors
+          sudo nginx -t
+
+          # Restart Nginx to apply the changes
+          sudo systemctl restart nginx
+
+          # Step 5: Restart PHP-FPM to ensure all PHP changes are applied
+          sudo systemctl restart php8.3-fpm
+
+          # Step 6: Add MySQL Database User and Grant Permissions
+          # Create a MySQL user with the name "laravel" and password "secret"
+          sudo mysql -e "CREATE USER 'laravel'@'localhost' IDENTIFIED BY 'secret';"
+
+          # Create the "laravel" database (if it doesn't exist)
+          sudo mysql -e "CREATE DATABASE IF NOT EXISTS laravel;"
+
+          # Grant all privileges on the "laravel" database to the "laravel" user
+          sudo mysql -e "GRANT ALL PRIVILEGES ON laravel.* TO 'laravel'@'localhost';"
+
+          # Flush the privileges to apply the changes
+          sudo mysql -e "FLUSH PRIVILEGES;"
