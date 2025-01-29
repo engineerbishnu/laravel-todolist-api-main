@@ -1,0 +1,15 @@
+name: Deploy
+on: [push]
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy Code
+        run: |
+          cd /var/www/laravel
+          git pull
+          composer install --no-dev
+          php artisan key:generate
+          php artisan migrate --force
+          sudo systemctl restart php8.1-fpm 
