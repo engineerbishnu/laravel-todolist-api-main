@@ -1,15 +1,44 @@
 name: Deploy
-on: [push]
+on: 
+  push:
+    branches:
+      - main  # Deploy only on push to the main branch
+
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # Use your self-hosted runner
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Deploy Code
+      # Step 1: Checkout the code
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      # Step 2: Deploy Laravel Code
+      - name: Deploy Laravel Code
         run: |
-          cd /var/www/laravel
-          git pull
-          composer install --no-dev
+          # Navigate to the Laravel directory
+          cd /home/vagrant/laravel-todolist-api-main
+
+          # Pull the latest changes from the repository
+          git pull origin main
+
+          # Install/update dependencies (excluding dev dependencies) and optimize autoloader
+          composer install --no-dev --optimize-autoloader
+
+          # Generate the application key
           php artisan key:generate
+
+          # Run migrations with --force for production environments
           php artisan migrate --force
-          sudo systemctl restart php8.1-fpm 
+
+          # Clear and cache configuration to optimize the app
+          php artisan config:cache
+
+          # Restart PHP-FPM to apply changes
+          sudo systemctl restart php8.1-fpm
+
+          # Optionally, reload Nginx (if you made Nginx configuration changes)
+          sudo systemctl reload nginx
+
+          # Ensure the proper permissions for directories (if needed)
+          sudo chown -R www-data:www-data /home/vagrant/laravel-todolist-api-main/storage /home/vagrant/laravel-todolist-api-main/bootstrap/cache
