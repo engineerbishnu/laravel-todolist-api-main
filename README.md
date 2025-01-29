@@ -161,4 +161,4 @@ Content-Type: application/json
 
 ---
 
-Replace `YOUR_ACCESS_TOKEN` with the actual token obtained during login for authorization.
+Replace `YOUR_ACCESS_TOKEN` with the actual token obtained during login for authorization effectively.
