@@ -8,6 +8,8 @@ Follow these steps to get the application up and running.
 
 ### Prerequisites
 
+- Vagrant setup
+- virtual box or vmware or hypervusor setup
 - MySQL Server
 - Redis Server
 - PHP 8.3
@@ -15,39 +17,51 @@ Follow these steps to get the application up and running.
 
 ### Installation Steps
 
-1. **Create MySQL and Redis servers**
-
-   Ensure that you have MySQL and Redis servers set up and running.
-
-2. **Copy `.env` file**
+1. **Clone the repository***
 
    ```bash
-   cp .env.example .env
+   git clone https://github.com/engineerbishnu/laravel-todolist-api-main.git
+   cd /your/cloned/path/for/this/repo/laravel-todolist-api-main.git
+   cd /your/cloned/path/for/this/repo/laravel-todolist-api-main/Vagrant_Server/
+   vagrant up
    ```
 
-3. **Update `.env` file**
+2. **Infrastructure Created***
 
-   Update the `.env` file with your environment-specific details, such as database credentials and Redis connection.
+   ```
+   Now Infrastructure created, we can do setup self-hosted runner for CD part, after creating github workflow file, it will handle CI part.
+   Now We can start deployment part here.
+   ```
+3. **Self-Hosted Runner Setup**
 
-4. **Install Dependencies**
+   ```
+   Gi to settings of repositore and search left hand side Actions, inside actions there is Runners. Create one self-hosted runners for now.
+   ```
+
+4. **Start Runner `run the runner`**
+   ```bash
+   ./run.sh
+   ```
+
+5. **Install Dependencies**
 
    ```bash
    composer install
    ```
 
-5. **Generate Application Key**
+6. **Generate Application Key**
 
    ```bash
    php artisan key:generate
    ```
 
-6. **Run Database Seeder**
+7. **Run Database Seeder**
 
    ```bash
    php artisan db:seed
    ```
 
-7. **Serve site with herd or valet or nginx**
+8. **Serve site with herd or valet or nginx**
 
     #### herd example
     ```bash
@@ -161,4 +175,4 @@ Content-Type: application/json
 
 ---
 
-Replace `YOUR_ACCESS_TOKEN` with the actual token obtained during login for authorization effectively.
+Replace `YOUR_ACCESS_TOKEN` with the actual token obtained during login for authorization effectively. For further instructons, follow the documented docs available inside my repo.
