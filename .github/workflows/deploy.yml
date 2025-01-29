@@ -23,11 +23,6 @@ jobs:
           composer install --no-dev --optimize-autoloader
 
           php artisan key:generate
-
-          php artisan migrate --force
-
-          php artisan config:cache
-
           sudo chmod -R 775 storage
           sudo usermod -aG vagrant www-data
           sudo chown -R www-data:www-data storage
@@ -63,3 +58,6 @@ jobs:
 
           # Flush the privileges to apply the changes
           sudo mysql -e "FLUSH PRIVILEGES;"
+          php artisan migrate --force
+          php artisan db:seed
+          php artisan config:cache
